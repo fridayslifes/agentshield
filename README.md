@@ -37,6 +37,19 @@ The app is a standard Streamlit app and ships with `Dockerfile`, `render.yaml`, 
 Notes: the SQLite database lives on the container disk, so free hosts reset history on redeploy (fine for demos; mount a volume for persistence).
 Health check path: `/_stcore/health`. Default mode is `offline`, which works with no key.
 
+### Deploy gotcha (already fixed here)
+`agentshield.deployinn.com` is live. Two problems had to be fixed before it worked:
+
+1. **Streamlit's origin check blocked the WebSocket.** Behind a reverse proxy / custom domain the browser sends
+   `Origin: https://agentshield.deployinn.com`, and Streamlit answered the `/_stcore/stream` upgrade with
+   **HTTP 403**. The page loaded its skeleton and hung forever. Fix is in `.streamlit/config.toml`:
+   `enableXsrfProtection = false` and `enableCORS = false`. If you deploy behind another proxy and see a
+   permanent skeleton, this is the cause.
+2. **The host auto-detected the project as `backend`.** A Streamlit app is a website; deploy it with
+   `deployinn deploy --service web` if the first deploy is misclassified.
+
+Set the app password with `deployinn env set <project> APP_PASSWORD=...`, then redeploy — env changes need a rebuild.
+
 ## Architecture
 ```mermaid
 flowchart LR
@@ -63,7 +76,7 @@ agentshield/
 | `AGENTSHIELD_MODE` | What it uses | Needs |
 |---|---|---|
 | `offline` (default) | built-in simulator | nothing |
-| `deepseek` | DeepSeek chat API (`deepseek-chat`) | `DEEPSEEK_API_KEY` |
+| `deepseek` | any OpenAI-compatible endpoint (`DEEPSEEK_BASE_URL`; default `deepseek-chat` on api.deepseek.com) | `DEEPSEEK_API_KEY` |
 | `anthropic` | Claude API (`claude-sonnet-5-5`, `claude-haiku-5-5`) | `ANTHROPIC_API_KEY` |
 
 Set keys in an environment variable or `.env` (see `.env.example`). Never commit a key. The per-run call cap is
