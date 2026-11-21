@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: agentshield
+    runtime: docker
+    plan: free
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: AGENTSHIELD_MODE
+        value: offline
+      - key: DEEPSEEK_API_KEY
+        sync: false        # paste in the Render dashboard, not here
+      - key: APP_PASSWORD
+        sync: false
