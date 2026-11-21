@@ -1,0 +1,9 @@
+pydantic>=2.5
+pyyaml>=6.0
+pandas>=2.0
+plotly>=5.18
+streamlit>=1.35
+pytest>=8.0
+python-dotenv>=1.0
+# Only needed if you later switch to AGENTSHIELD_MODE=anthropic (needs an API key):
+anthropic>=0.40
