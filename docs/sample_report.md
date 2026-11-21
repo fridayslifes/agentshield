@@ -1,14 +1,16 @@
 # AgentShield report
 
-Generated 2026-11-21 11:32.
+Generated 2026-11-21 21:01.
 
 ## Reproducibility (stored per run)
 
-| id | config | mode | seed | target_model | prompt_version | n_attacks | api_calls | status |
+_`n_total_cases` includes the benign controls, which are scored separately and excluded from ASR._
+
+| id | config | mode | seed | target_model | prompt_version | n_total_cases | api_calls | status |
 |---|---|---|---|---|---|---|---|---|
-| baseline-20261121-113139-371e | baseline | offline | 1337 | claude-sonnet-5-5 | baseline:v1 | 74 | 125 | complete |
-| hardened_filters-20261121-113053-f6e3 | hardened_filters | offline | 1337 | claude-sonnet-5-5 | hardened:v1 | 74 | 86 | complete |
-| hardened-20261121-113052-bb8a | hardened | offline | 1337 | claude-sonnet-5-5 | hardened:v1 | 74 | 110 | complete |
+| hardened_filters-20261121-205513-076b | hardened_filters | offline | 1337 | claude-sonnet-5-5 | hardened:v1 | 74 | 86 | complete |
+| hardened-20261121-205513-2297 | hardened | offline | 1337 | claude-sonnet-5-5 | hardened:v1 | 74 | 110 | complete |
+| baseline-20261121-205513-fc45 | baseline | offline | 1337 | claude-sonnet-5-5 | baseline:v1 | 74 | 125 | complete |
 
 ## Before / after: configs A, B, C
 
