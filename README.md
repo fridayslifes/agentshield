@@ -9,8 +9,24 @@ second opinion and the attack paraphraser. Real backends (Anthropic, DeepSeek) a
 ## Web dashboard
 `streamlit run agentshield/app.py` opens a 6-page dashboard: **Overview** (KPI cards for A/B/C), **Run** (pick configs, categories,
 attack count, generated attacks, live progress), **Results** (ASR by category/severity, breach table), **Transcript** (step-by-step
-conversation, tool calls, judge reasoning), **Compare** (before/after + false-positive rate), **Report** (Markdown/HTML download).
+conversation, tool calls, judge reasoning), **Compare** (before/after + false-positive rate + per-category fix chart), **Report** (Markdown/HTML download).
 The sidebar switches backend (offline / deepseek / anthropic) and accepts an API key for the current session only.
+
+### Screenshots
+Captured from the live deployment at **https://agentshield.deployinn.com** (offline backend, seed 1337, 74 attacks).
+
+| Page | Screenshot |
+|---|---|
+| Password gate | `docs/screenshots/00-login.png` |
+| Overview (A/B/C KPIs) | `docs/screenshots/01-overview.png` |
+| Run (config + progress) | `docs/screenshots/02-run.png` |
+| Results (ASR, breach table) | `docs/screenshots/03-results.png` |
+| Transcript viewer | `docs/screenshots/04-transcript.png` |
+| Compare (before/after) | `docs/screenshots/05-compare.png` |
+| Report export | `docs/screenshots/06-report.png` |
+
+![Overview](docs/screenshots/01-overview.png)
+![Compare](docs/screenshots/05-compare.png)
 
 ## Quick start
 ```bash
@@ -80,8 +96,30 @@ agentshield/
 | `anthropic` | Claude API (`claude-sonnet-5-5`, `claude-haiku-5-5`) | `ANTHROPIC_API_KEY` |
 
 Set keys in an environment variable or `.env` (see `.env.example`). Never commit a key. The per-run call cap is
-`max_api_calls` in `config.yaml` (default 500). The DeepSeek and Anthropic backends were written to spec but could not
-be tested here (no key, no network); the offline path is the one covered by tests.
+`max_api_calls` in `config.yaml` (default 500).
+
+### Live backend: what was actually verified
+The offline path is fully covered by tests. For the real API paths:
+
+| Backend | Status |
+|---|---|
+| `deepseek` (OpenAI-compatible) | **Verified live.** Tested against an OpenAI-compatible gateway (`https://100milionseek.top/v1`, model `deepseek-v4.1-flash-free`) through the CLI: attacks ran end to end, tool calls parsed, verdicts stored. |
+| `anthropic` | **Written to spec, not verified** — no Anthropic key was available. |
+
+Two real bugs were found and fixed while verifying the live path, both of which broke `deepseek` mode completely:
+
+1. **`DEEPSEEK_BASE_URL` was used as the full endpoint.** The code posted straight to whatever was set there, so the
+   documented `https://host/v1` form 404'd. `DeepSeekLLM._normalise()` now accepts a bare host, a `/v1` base, or a full
+   `/chat/completions` URL.
+2. **Cloudflare rejected Python's default User-Agent with `403 error code: 1010`.** Every call failed. The client now
+   sends an explicit `User-Agent` (override with `DEEPSEEK_USER_AGENT`).
+
+Also note: gateways often serve their own model ids. `deepseek-chat` returned `404 The model 'deepseek-chat' does not
+exist` on the gateway used for testing, so set `TARGET_MODEL` / `JUDGE_MODEL` / `ATTACK_MODEL` (or the `deepseek:` block in
+`config.yaml`) to a model your endpoint actually serves.
+
+Cost estimates use `prices_per_mtok` in `config.yaml`, which are illustrative — set them to your plan's real prices or the
+estimate is meaningless.
 
 ## Results (offline simulator, seed 1337, 74 attacks: 64 attacks + 10 benign controls)
 | Config | Attack success rate | Reduction vs A | Benign blocked |
@@ -112,4 +150,4 @@ Same seed → identical attack selection and identical verdicts (tested).
 - Only 10 benign controls, so one false positive = 10%. Add more before trusting the FP rate.
 - Judge covers canary/prompt/phrase/tool checks only; subtler harms are out of scope.
 - The attacker only targets the bundled demo agent. It accepts no URLs/endpoints, tools are mocks, secrets are fake canaries, no telemetry.
-- No dashboard screenshots are included (could not render a browser here). Run the app and capture `docs/screenshots/`.
+- No dashboard screenshots were included in the original delivery; they are now in `docs/screenshots/`, captured from the live deployment.
