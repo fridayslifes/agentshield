@@ -1,5 +1,13 @@
 [server]
 headless = true
+# Behind a reverse proxy / custom domain (deployinn, Render, Fly, nginx) the browser's
+# Origin header is the public host, which Streamlit's XSRF/origin check rejects with a
+# 403 on the /_stcore/stream WebSocket. The page then hangs on the loading skeleton.
+# Turning the origin check off is the standard fix for that deployment shape.
+enableXsrfProtection = false
+enableCORS = false
+# Health check and WebSocket upgrade need a generous window behind a CDN.
+enableWebsocketCompression = true
 [theme]
 primaryColor = "#d9534f"
 backgroundColor = "#0e1117"
