@@ -1,14 +1,14 @@
 # AgentShield report
 
-Generated 2026-11-21 11:34.
+Generated 2026-11-21 20:34.
 
 ## Reproducibility (stored per run)
 
 | id | config | mode | seed | target_model | prompt_version | n_attacks | api_calls | status |
 |---|---|---|---|---|---|---|---|---|
-| hardened_filters-20261121-113422-02af | hardened_filters | offline | 1337 | claude-sonnet-5-5 | hardened:v1 | 74 | 86 | complete |
-| hardened-20261121-113422-3e00 | hardened | offline | 1337 | claude-sonnet-5-5 | hardened:v1 | 74 | 110 | complete |
-| baseline-20261121-113421-1769 | baseline | offline | 1337 | claude-sonnet-5-5 | baseline:v1 | 74 | 125 | complete |
+| hardened_filters-20261121-202603-f779 | hardened_filters | offline | 1337 | claude-sonnet-5-5 | hardened:v1 | 74 | 86 | complete |
+| hardened-20261121-202603-167a | hardened | offline | 1337 | claude-sonnet-5-5 | hardened:v1 | 74 | 110 | complete |
+| baseline-20261121-202603-204d | baseline | offline | 1337 | claude-sonnet-5-5 | baseline:v1 | 74 | 125 | complete |
 
 ## Before / after: configs A, B, C
 
