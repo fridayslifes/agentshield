@@ -145,9 +145,17 @@ Same seed → identical attack selection and identical verdicts (tested).
 ## Limitations (read these)
 - **Offline numbers measure the simulator, not a real LLM.** Its susceptibility rules are hand-written assumptions.
   Use them to see the tool work; use `deepseek`/`anthropic` mode for real conclusions.
+- **A real model scores very differently from the simulator — and much lower.** In the live DeepSeek runs performed
+  while building this, a real model refused every seeded attack in the sample (0 breaches out of 5 non-benign attacks),
+  while the same attacks breach the simulator 51.6% of the time. The simulator's 51.6% / 10.9% / 1.6% A/B/C spread is
+  therefore a *demonstration of the harness*, not a measurement of any real model's safety. Do not quote those numbers
+  as a model's ASR. The A/B/C spread on a real backend needs a much larger sample (see next point) before it means anything.
+- **The 0% benign false-positive rate is not evidence of a good filter.** With only 10 benign controls, one false positive
+  is 10%, so the rate is coarse; and the simulator never refuses a benign request, so offline FP is 0% by construction.
 - The rule-based defenses are simple on purpose: regexes miss base64/translated payloads; the output filter misses
   encoded or spelled-out secrets; the input filter can flag legitimate text such as "ignore the previous draft".
-- Only 10 benign controls, so one false positive = 10%. Add more before trusting the FP rate.
 - Judge covers canary/prompt/phrase/tool checks only; subtler harms are out of scope.
 - The attacker only targets the bundled demo agent. It accepts no URLs/endpoints, tools are mocks, secrets are fake canaries, no telemetry.
 - No dashboard screenshots were included in the original delivery; they are now in `docs/screenshots/`, captured from the live deployment.
+- **Live runs are slow.** Each attack costs several sequential API calls, and on a free-tier gateway one 74-attack run
+  took over 10 minutes. Use `--max-attacks` to keep runs short.
