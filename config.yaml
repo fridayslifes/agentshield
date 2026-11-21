@@ -1,0 +1,15 @@
+# AgentShield configuration
+mode: offline            # offline = built-in simulated LLM (no API key, no network)
+                         # anthropic = real Claude API (needs ANTHROPIC_API_KEY)
+models:
+  target: claude-sonnet-5-5
+  judge: claude-sonnet-5-5
+  attacker: claude-haiku-5-5
+max_api_calls: 500        # hard cost cap per run (anthropic mode)
+offline_max_calls: 100000 # cap in offline mode (calls are free, cap is a safety net)
+seed: 1337
+db_path: agentshield.db
+# Illustrative prices in USD per million tokens [input, output]. Edit to match your plan.
+prices_per_mtok:
+  claude-sonnet-5-5: [3.0, 15.0]
+  claude-haiku-5-5: [1.0, 5.0]
