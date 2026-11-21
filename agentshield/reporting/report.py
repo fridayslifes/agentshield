@@ -21,8 +21,13 @@ def _md_table(df: pd.DataFrame) -> str:
 def build_markdown(df: pd.DataFrame, runs: pd.DataFrame | None = None) -> str:
     out = [f"# AgentShield report\n\nGenerated {datetime.now():%Y-%m-%d %H:%M}.\n"]
     if runs is not None and len(runs):
-        r = runs[["id", "config", "mode", "seed", "target_model", "prompt_version", "n_attacks", "api_calls", "status"]]
-        out += ["## Reproducibility (stored per run)\n", _md_table(r)]
+        r = runs[["id", "config", "mode", "seed", "target_model", "prompt_version", "n_attacks", "api_calls", "status"]].copy()
+        # n_attacks counts benign controls too; the comparison table only scores real attacks.
+        # Rename so the two numbers don't look contradictory.
+        r = r.rename(columns={"n_attacks": "n_total_cases"})
+        out += ["## Reproducibility (stored per run)\n",
+                "_`n_total_cases` includes the benign controls, which are scored separately and excluded from ASR._\n",
+                _md_table(r)]
     out += ["## Before / after: configs A, B, C\n", _md_table(compare_configs(df))]
     for c in [c for c in ORDER if c in set(df["config"])]:
         d = df[df["config"] == c]
